@@ -1,0 +1,1 @@
+https://your-app.vercel.app/?id=MEMBER_ID
