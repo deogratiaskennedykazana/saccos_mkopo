@@ -166,22 +166,31 @@ export function LoanForm() {
     }
 
     try {
+      console.log('📤 Submitting payload:', payload)
+      
       // Use the correct Supabase insert method WITHOUT columns parameter
-      // The issue was that Prefer header needs to be set, not columns in URL
       const { data, error } = await supabase
         .from('loan_applications')
         .insert([payload])
-        .select()
       
-      if (error) throw error
+      if (error) {
+        console.error('❌ Supabase error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        })
+        throw error
+      }
       
+      console.log('✅ Submission successful:', data)
       showToast('✓ Maombi yako ya mkopo yamewasilishwa!', 'success')
       setSubmitted(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Jaribu tena.'
+      console.error('❌ Error details:', err)
       showToast('✗ Hitilafu: ' + msg, 'error')
-      console.error('Loan submission error:', err)
     } finally {
       setSubmitting(false)
     }
