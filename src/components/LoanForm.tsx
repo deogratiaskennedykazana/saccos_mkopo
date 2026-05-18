@@ -166,14 +166,22 @@ export function LoanForm() {
     }
 
     try {
-      const { error } = await supabase.from('loan_applications').insert([payload])
+      // Use the correct Supabase insert method WITHOUT columns parameter
+      // The issue was that Prefer header needs to be set, not columns in URL
+      const { data, error } = await supabase
+        .from('loan_applications')
+        .insert([payload])
+        .select()
+      
       if (error) throw error
+      
       showToast('✓ Maombi yako ya mkopo yamewasilishwa!', 'success')
       setSubmitted(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Jaribu tena.'
       showToast('✗ Hitilafu: ' + msg, 'error')
+      console.error('Loan submission error:', err)
     } finally {
       setSubmitting(false)
     }
@@ -388,7 +396,7 @@ export function LoanForm() {
       {/* ─── SECTION E: AZIMIO ─── */}
       <Section letter="E" title="Azimio la Mkopaji">
         <p style={{ fontSize: 14, lineHeight: 1.8, marginBottom: 16 }}>
-          Mimi, <strong>{applicant?.jina_kamili || '_______________'}</strong>, Mwombaji wa mkopo, nathibitisha kuwa taarifa zote zilizotolewa hapo juu kwa Chama ni <strong>SAHIHI NA KWELI</strong> na kwamba nitawajibika kwa usahihi katika malipo ya mkopo huu niliouomba.
+          Mimi, <strong>{applicant?.jina_kamili || '_______________'}</strong>, Mwombaji wa mkopo, nathibitisha kuwa taarifa zote zilizotolewa hapo juu kwa Chama ni <strong>SAHIHI NA KWELI</strong>.
         </p>
         <div className="field-grid cols-2" style={{ marginBottom: 20 }}>
           <FieldGroup label="Kiasi cha Mkopo (Tshs)">
